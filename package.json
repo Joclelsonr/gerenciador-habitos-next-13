@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^2.38.0",
+    "@vercel/kv": "^0.2.3",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"

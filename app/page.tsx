@@ -1,25 +1,29 @@
 import Link from "next/link";
 import DayState from "@/components/DayState";
 import { IconTrash } from "@tabler/icons-react";
+import { kv } from "@vercel/kv";
 
-export default function Home() {
-    const habits = {
-        Estudar: {
-            "2023-10-01": true,
-            "2023-10-02": true,
-            "2023-10-03": true,
-        },
-        Correr: {
-            "2023-10-02": true,
-            "2023-10-03": true,
-            "2023-10-04": true,
-        },
-    };
+export type Habits = {
+    [habit: string]: Record<string, boolean>;
+} | null;
 
+export default async function Home() {
+    const habits: Habits = await kv.hgetall("habits");
+    console.log(habits);
     const today = new Date();
     const todayWeekDay = today.getDay();
     const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-    const weekDaysOrdered = weekDays.slice(todayWeekDay +1).concat(weekDays.slice(0, todayWeekDay +1));
+    const weekDaysOrdered = weekDays
+        .slice(todayWeekDay + 1)
+        .concat(weekDays.slice(0, todayWeekDay + 1));
+
+    const last7Days = weekDays
+        .map((_, index) => {
+            const date = new Date();
+            date.setDate(date.getDate() - index);
+            return date.toISOString().slice(0, 10);
+        })
+        .reverse();
 
     return (
         <main className="container relative flex flex-col gap-8 px-4 pt-16">
@@ -40,21 +44,31 @@ export default function Home() {
                                 <IconTrash size={20} color="red" />
                             </button>
                         </div>
-                        <section className="grid grid-cols-7 bg-neutral-800 rounded-md p-2">
-                            {weekDaysOrdered.map((day) => (
-                                <div key={day} className="flex flex-col last:font-bold">
-                                    <span className="font-sans text-xs text-white text-center">
-                                        {day}
-                                    </span>
-                                    <DayState day={undefined} />
-                                </div>
-                            ))}
-                        </section>
+                        <Link href={`habits/${habit}`}>
+                            <section className="grid grid-cols-7 bg-neutral-800 rounded-md p-2">
+                                {weekDaysOrdered.map((day, index) => (
+                                    <div
+                                        key={day}
+                                        className="flex flex-col last:font-bold"
+                                    >
+                                        <span className="font-sans text-xs text-white text-center">
+                                            {day}
+                                        </span>
+                                        <DayState
+                                            day={habitStreak[last7Days[index]]}
+                                        />
+                                    </div>
+                                ))}
+                            </section>
+                        </Link>
                     </div>
                 ))}
-                <Link href="habits-new" className="fixed text-center bottom-10 w-2/3 left-1/2 -translate-x-1/2 text-neutral-900 bg-[#45EDAD] font-display text-2xl p-2 rounded-md">
-                  Novo Hábito
-                </Link>
+            <Link
+                href="habits-new"
+                className="fixed text-center bottom-10 w-2/3 left-1/2 -translate-x-1/2 text-neutral-900 bg-[#45EDAD] font-display text-2xl p-2 rounded-md"
+            >
+                Novo Hábito
+            </Link>
         </main>
     );
 }
