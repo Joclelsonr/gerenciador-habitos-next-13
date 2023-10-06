@@ -1,7 +1,7 @@
 import Link from "next/link";
-import DayState from "@/components/DayState";
-import { IconTrash } from "@tabler/icons-react";
 import { kv } from "@vercel/kv";
+import DayState from "@/components/DayState";
+import DeleteButton from "@/components/DeleteButton";
 
 export type Habits = {
     [habit: string]: Record<string, boolean>;
@@ -10,6 +10,7 @@ export type Habits = {
 export default async function Home() {
     const habits: Habits = await kv.hgetall("habits");
     console.log(habits);
+
     const today = new Date();
     const todayWeekDay = today.getDay();
     const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -40,9 +41,7 @@ export default async function Home() {
                             <span className="text-xl font-light text-white font-sans">
                                 {habit}
                             </span>
-                            <button>
-                                <IconTrash size={20} color="red" />
-                            </button>
+                            <DeleteButton habit={habit} />
                         </div>
                         <Link href={`habits/${habit}`}>
                             <section className="grid grid-cols-7 bg-neutral-800 rounded-md p-2">

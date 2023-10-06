@@ -1,6 +1,7 @@
 import { kv } from "@vercel/kv";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+// import GoBackButton from "@/components/GoBackButton";
 
 export default function HabitsNew() {
     async function newHabit(formData: FormData) {
@@ -28,9 +29,7 @@ export default function HabitsNew() {
                 <button type="submit" className="bg-[#45EDAD] font-display text-neutral-900 text-2xl p-2 rounded-md mt-8">
                     Cadastrar
                 </button>
-                <button className="bg-neutral-800 text-[#f85858] font-display text-2xl p-2 rounded-md">
-                    Cancelar
-                </button>
+                {/* <GoBackButton /> */}
             </form>
         </main>
     )
